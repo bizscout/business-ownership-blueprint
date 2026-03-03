@@ -3,7 +3,8 @@
 
 @theme inline {
   --font-sans: 'Inter', sans-serif;
-  --font-display: 'Outfit', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-serif: 'Playfair Display', serif;
 
   --color-background: 45 26% 92%; /* #F0EDE4 */
   --color-foreground: 40 5% 12%; /* #1F1E1C */

@@ -5,36 +5,36 @@ export default function LandingPage() {
   const startQuiz = useQuizStore((state) => state.startQuiz);
 
   return (
-    <div className="flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="w-16 h-16 bg-[#52130C]/10 rounded-full flex items-center justify-center mb-8 border border-[#52130C]/20">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#52130C]">
-          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+    <div className="flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 w-full max-w-lg mx-auto md:mx-0">
+      {/* Eyebrow / Brand label */}
+      <div className="flex items-center gap-4 mb-12">
+        <div className="h-[1px] w-12 bg-[#52130C]"></div>
+        <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#52130C]">Contrarian Thinking</span>
       </div>
-      
-      <h1 className="text-4xl md:text-5xl font-bold mb-4 font-display leading-tight text-[#1F1E1C]">
-        The Business Ownership <span className="text-[#52130C] block mt-1">Blueprint</span>
+
+      <h1 className="text-5xl md:text-7xl font-display font-semibold mb-6 text-[#1F1E1C] leading-[1.05] tracking-tight">
+        The Business<br />
+        Ownership<br />
+        <span className="italic font-light text-[#52130C]">Blueprint</span>
       </h1>
       
-      <p className="text-xl text-[#713718] mb-8 font-light italic font-serif">
+      <p className="text-xl md:text-2xl text-[#1F1E1C]/70 mb-12 font-serif italic leading-relaxed">
         Discover exactly where you stand — and what to do next.
       </p>
       
-      <div className="bg-white border border-[#E5E0D8] rounded-xl p-6 mb-10 text-left shadow-sm">
-        <p className="text-[#1F1E1C]/80 leading-relaxed text-sm md:text-base">
-          15 questions. Instant results. Used by the Contrarian Thinking community to help owners and acquirers understand exactly where they are and what to do next.
+      <div className="py-8 border-y border-[#1F1E1C]/15 mb-12">
+        <p className="text-[#1F1E1C]/80 leading-relaxed font-sans text-sm md:text-base">
+          <strong className="text-[#1F1E1C] font-semibold">15 questions. Instant results.</strong> Used by the Contrarian Thinking community to help owners and acquirers understand exactly where they are and what to do next.
         </p>
       </div>
 
       <button
         onClick={startQuiz}
-        className="w-full bg-[#52130C] hover:bg-[#713718] text-[#F0EDE4] font-semibold py-4 px-8 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-[#52130C]/20"
+        className="group relative w-full sm:w-auto bg-[#1F1E1C] hover:bg-[#52130C] text-[#F0EDE4] font-medium py-5 px-8 flex items-center justify-between sm:justify-center gap-4 transition-all duration-300 shadow-xl shadow-[#52130C]/10"
         data-testid="button-start-quiz"
       >
-        Get Your Blueprint
-        <ArrowRight className="w-5 h-5" />
+        <span className="tracking-wide text-sm uppercase font-bold">Get Your Blueprint</span>
+        <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
       </button>
     </div>
   );

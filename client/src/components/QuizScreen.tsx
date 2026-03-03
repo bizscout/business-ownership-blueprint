@@ -25,20 +25,21 @@ export default function QuizScreen() {
   if (!question) return null;
 
   return (
-    <div className="w-full flex flex-col animate-in fade-in zoom-in-95 duration-300">
+    <div className="w-full flex flex-col animate-in fade-in zoom-in-95 duration-500">
       {/* Progress Bar */}
-      <div className="w-full bg-[#E5E0D8] h-1.5 rounded-full mb-8 overflow-hidden shadow-inner">
-        <div 
-          className="bg-[#52130C] h-full transition-all duration-500 ease-out rounded-full"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      
-      <div className="text-sm text-[#713718] font-medium mb-4 tracking-wider uppercase">
-        Question {currentQuestionIndex + 1} of {questions.length}
+      <div className="flex items-center gap-4 mb-10">
+        <div className="w-full bg-[#1F1E1C]/10 h-[2px] overflow-hidden">
+          <div 
+            className="bg-[#52130C] h-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div className="text-xs text-[#1F1E1C]/50 font-medium tracking-widest uppercase whitespace-nowrap">
+          {currentQuestionIndex + 1} / {questions.length}
+        </div>
       </div>
 
-      <h2 className="text-2xl md:text-3xl font-bold mb-8 font-display leading-snug text-[#1F1E1C]">
+      <h2 className="text-3xl md:text-4xl font-display mb-10 leading-snug text-[#1F1E1C]">
         {question.text}
       </h2>
 
@@ -49,20 +50,22 @@ export default function QuizScreen() {
             <button
               key={idx}
               onClick={() => handleSelect(option.score)}
-              className={`text-left p-5 rounded-xl border transition-all duration-200 ${
+              className={`text-left p-5 md:p-6 transition-all duration-300 border ${
                 isSelected 
-                  ? "bg-[#52130C] border-[#52130C] text-[#F0EDE4] shadow-md" 
-                  : "bg-white border-[#E5E0D8] text-[#1F1E1C]/80 hover:border-[#B5605A] hover:bg-[#F0EDE4]/50 shadow-sm"
+                  ? "bg-[#52130C] border-[#52130C] text-[#F0EDE4] shadow-lg shadow-[#52130C]/20" 
+                  : "bg-transparent border-[#1F1E1C]/20 text-[#1F1E1C]/90 hover:border-[#52130C] hover:bg-[#52130C]/5"
               }`}
               data-testid={`button-option-${idx}`}
             >
-              <span className="flex items-center gap-4">
-                <span className={`flex-shrink-0 w-6 h-6 rounded-full border flex items-center justify-center text-xs font-semibold ${
-                  isSelected ? "border-[#F0EDE4] text-[#F0EDE4]" : "border-[#B5605A] text-[#B5605A]"
+              <span className="flex items-start gap-5">
+                <span className={`flex-shrink-0 w-6 h-6 mt-0.5 border flex items-center justify-center text-xs font-serif ${
+                  isSelected ? "border-[#F0EDE4] text-[#F0EDE4]" : "border-[#1F1E1C]/30 text-[#1F1E1C]/50"
                 }`}>
                   {String.fromCharCode(65 + idx)}
                 </span>
-                {option.text}
+                <span className="leading-relaxed text-sm md:text-base">
+                  {option.text}
+                </span>
               </span>
             </button>
           );

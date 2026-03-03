@@ -27,18 +27,18 @@ export default function QuizScreen() {
   return (
     <div className="w-full flex flex-col animate-in fade-in zoom-in-95 duration-300">
       {/* Progress Bar */}
-      <div className="w-full bg-[#222] h-1.5 rounded-full mb-8 overflow-hidden">
+      <div className="w-full bg-[#E5E0D8] h-1.5 rounded-full mb-8 overflow-hidden shadow-inner">
         <div 
-          className="bg-teal-500 h-full transition-all duration-500 ease-out rounded-full"
+          className="bg-[#52130C] h-full transition-all duration-500 ease-out rounded-full"
           style={{ width: `${progress}%` }}
         />
       </div>
       
-      <div className="text-sm text-teal-400 font-medium mb-4 tracking-wider uppercase">
+      <div className="text-sm text-[#713718] font-medium mb-4 tracking-wider uppercase">
         Question {currentQuestionIndex + 1} of {questions.length}
       </div>
 
-      <h2 className="text-2xl md:text-3xl font-bold mb-8 font-display leading-snug">
+      <h2 className="text-2xl md:text-3xl font-bold mb-8 font-display leading-snug text-[#1F1E1C]">
         {question.text}
       </h2>
 
@@ -51,14 +51,14 @@ export default function QuizScreen() {
               onClick={() => handleSelect(option.score)}
               className={`text-left p-5 rounded-xl border transition-all duration-200 ${
                 isSelected 
-                  ? "bg-teal-500/10 border-teal-500 text-white" 
-                  : "bg-[#161616] border-[#2a2a2a] text-gray-300 hover:border-gray-500 hover:bg-[#222]"
+                  ? "bg-[#52130C] border-[#52130C] text-[#F0EDE4] shadow-md" 
+                  : "bg-white border-[#E5E0D8] text-[#1F1E1C]/80 hover:border-[#B5605A] hover:bg-[#F0EDE4]/50 shadow-sm"
               }`}
               data-testid={`button-option-${idx}`}
             >
               <span className="flex items-center gap-4">
-                <span className={`flex-shrink-0 w-6 h-6 rounded-full border flex items-center justify-center text-xs ${
-                  isSelected ? "border-teal-500 text-teal-500" : "border-gray-600 text-gray-500"
+                <span className={`flex-shrink-0 w-6 h-6 rounded-full border flex items-center justify-center text-xs font-semibold ${
+                  isSelected ? "border-[#F0EDE4] text-[#F0EDE4]" : "border-[#B5605A] text-[#B5605A]"
                 }`}>
                   {String.fromCharCode(65 + idx)}
                 </span>

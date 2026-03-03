@@ -39,19 +39,19 @@ export default function SpiderChart({ axes }: SpiderChartProps) {
       {
         label: 'Your Profile',
         data: [axes.DI, axes.OD, axes.CR, axes.RT, axes.SV],
-        backgroundColor: 'rgba(20, 184, 166, 0.25)', // teal fill
-        borderColor: 'rgba(20, 184, 166, 1)',
+        backgroundColor: 'rgba(82, 19, 12, 0.15)', // #52130C fill
+        borderColor: '#52130C',
         borderWidth: 2,
-        pointBackgroundColor: 'rgba(20, 184, 166, 1)',
+        pointBackgroundColor: '#52130C',
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(20, 184, 166, 1)',
+        pointHoverBorderColor: '#52130C',
       },
       {
         label: 'Benchmark',
         data: [8, 8, 8, 8, 8],
         backgroundColor: 'transparent',
-        borderColor: 'rgba(255,255,255,0.15)',
+        borderColor: 'rgba(31, 30, 28, 0.2)', // #1F1E1C
         borderWidth: 1,
         borderDash: [5, 5],
         pointRadius: 0,
@@ -65,13 +65,14 @@ export default function SpiderChart({ axes }: SpiderChartProps) {
         min: 0,
         max: 10,
         ticks: { display: false, stepSize: 2 },
-        grid: { color: 'rgba(255,255,255,0.1)' },
-        angleLines: { color: 'rgba(255,255,255,0.1)' },
+        grid: { color: 'rgba(31, 30, 28, 0.1)' },
+        angleLines: { color: 'rgba(31, 30, 28, 0.1)' },
         pointLabels: {
-          color: '#ffffff',
+          color: '#1F1E1C',
           font: { 
             size: 11,
-            family: "'Inter', sans-serif"
+            family: "'Inter', sans-serif",
+            weight: 600 as const
           }
         }
       }
@@ -79,7 +80,9 @@ export default function SpiderChart({ axes }: SpiderChartProps) {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: 'rgba(31, 30, 28, 0.9)',
+        titleColor: '#F0EDE4',
+        bodyColor: '#F0EDE4',
         titleFont: { family: "'Inter', sans-serif" },
         bodyFont: { family: "'Inter', sans-serif" },
         callbacks: {
@@ -94,7 +97,7 @@ export default function SpiderChart({ axes }: SpiderChartProps) {
   };
 
   return (
-    <div className="w-full aspect-square relative bg-[#111] rounded-xl p-4 border border-[#222]">
+    <div className="w-full aspect-square relative bg-white rounded-xl p-4 shadow-sm border border-[#E5E0D8]">
       <Radar data={data} options={options} />
     </div>
   );

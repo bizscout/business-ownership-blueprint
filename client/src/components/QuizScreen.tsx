@@ -11,29 +11,21 @@ export default function QuizScreen() {
   const progress = ((currentQuestionIndex) / questions.length) * 100;
 
   useEffect(() => {
-    // Deliberately hold the selected score for a moment after transitioning 
-    // to the new question to create the "lingering" micro-interaction across pages,
-    // but keep it crisp so it doesn't stay too long.
-    const timer = setTimeout(() => {
-      setSelectedScore(null);
-    }, 150);
-    return () => clearTimeout(timer);
+    setSelectedScore(null);
   }, [currentQuestionIndex]);
 
   const handleSelect = (score: number) => {
-    if (selectedScore !== null) return; // Prevent double clicking
     setSelectedScore(score);
-    
-    // Hold briefly to show the selection before sliding to the next question
+    // Auto-advance after 400ms delay
     setTimeout(() => {
       answerQuestion(score);
-    }, 350);
+    }, 400);
   };
 
   if (!question) return null;
 
   return (
-    <div className="w-full flex flex-col animate-in fade-in zoom-in-[0.98] duration-300">
+    <div className="w-full flex flex-col animate-in fade-in zoom-in-95 duration-500">
       {/* Progress Bar */}
       <div className="flex items-center gap-4 mb-10">
         <div className="w-full bg-[#1F1E1C]/10 h-[2px] overflow-hidden">
@@ -58,7 +50,7 @@ export default function QuizScreen() {
             <button
               key={idx}
               onClick={() => handleSelect(option.score)}
-              className={`text-left p-5 md:p-6 transition-all duration-150 border ${
+              className={`text-left p-5 md:p-6 transition-all duration-300 border ${
                 isSelected 
                   ? "bg-[#52130C] border-[#52130C] text-[#F0EDE4] shadow-lg shadow-[#52130C]/20" 
                   : "bg-transparent border-[#1F1E1C]/20 text-[#1F1E1C]/90 hover:border-[#52130C] hover:bg-[#52130C]/5"
@@ -66,7 +58,7 @@ export default function QuizScreen() {
               data-testid={`button-option-${idx}`}
             >
               <span className="flex items-start gap-5">
-                <span className={`flex-shrink-0 w-6 h-6 mt-0.5 border flex items-center justify-center text-xs font-serif transition-colors duration-75 ${
+                <span className={`flex-shrink-0 w-6 h-6 mt-0.5 border flex items-center justify-center text-xs font-serif ${
                   isSelected ? "border-[#F0EDE4] text-[#F0EDE4]" : "border-[#1F1E1C]/30 text-[#1F1E1C]/50"
                 }`}>
                   {String.fromCharCode(65 + idx)}

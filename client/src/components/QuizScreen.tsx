@@ -10,14 +10,11 @@ export default function QuizScreen() {
   const question = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex) / questions.length) * 100;
 
-  useEffect(() => {
-    setSelectedScore(null);
-  }, [currentQuestionIndex]);
-
   const handleSelect = (score: number) => {
     setSelectedScore(score);
     // Auto-advance after 400ms delay
     setTimeout(() => {
+      setSelectedScore(null);
       answerQuestion(score);
     }, 400);
   };
@@ -50,7 +47,7 @@ export default function QuizScreen() {
             <button
               key={idx}
               onClick={() => handleSelect(option.score)}
-              className={`text-left p-5 md:p-6 transition-all duration-300 border ${
+              className={`text-left p-5 md:p-6 transition-all duration-150 border ${
                 isSelected 
                   ? "bg-[#52130C] border-[#52130C] text-[#F0EDE4] shadow-lg shadow-[#52130C]/20" 
                   : "bg-transparent border-[#1F1E1C]/20 text-[#1F1E1C]/90 hover:border-[#52130C] hover:bg-[#52130C]/5"
@@ -58,7 +55,7 @@ export default function QuizScreen() {
               data-testid={`button-option-${idx}`}
             >
               <span className="flex items-start gap-5">
-                <span className={`flex-shrink-0 w-6 h-6 mt-0.5 border flex items-center justify-center text-xs font-serif ${
+                <span className={`flex-shrink-0 w-6 h-6 mt-0.5 border flex items-center justify-center text-xs font-serif transition-colors duration-75 ${
                   isSelected ? "border-[#F0EDE4] text-[#F0EDE4]" : "border-[#1F1E1C]/30 text-[#1F1E1C]/50"
                 }`}>
                   {String.fromCharCode(65 + idx)}

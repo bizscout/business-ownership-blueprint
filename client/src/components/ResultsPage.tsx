@@ -6,7 +6,7 @@ import contentData from "@/data/content.json";
 import { ArrowRight, MoveRight } from "lucide-react";
 
 export default function ResultsPage() {
-  const { answers, userData } = useQuizStore();
+  const { answers, userData, gatingData } = useQuizStore();
 
   const results = useMemo(() => {
     const axes = calculateAxisScores(answers);
@@ -36,10 +36,14 @@ export default function ResultsPage() {
 
     const archetypeSummary = getVariation(parsedContent.archetypes[primaryArchetype]);
 
-    return { axes, primaryArchetype, secondaryArchetype, axisContent, archetypeSummary };
-  }, [answers]);
+    // Force BoardRoom routing if they own a business
+    const ctaRoute = gatingData?.ownsBusiness ? 'boardroom' : 
+      (['Acquirer', 'Operator'].includes(primaryArchetype) ? 'academy' : 'boardroom');
 
-  const { axes, primaryArchetype, axisContent, archetypeSummary } = results;
+    return { axes, primaryArchetype, secondaryArchetype, axisContent, archetypeSummary, ctaRoute };
+  }, [answers, gatingData]);
+
+  const { axes, primaryArchetype, axisContent, archetypeSummary, ctaRoute } = results;
 
   const archetypeDescriptors: Record<string, string> = {
     Acquirer: "You're wired for deals. You think from the deal side first.",
@@ -154,12 +158,14 @@ export default function ResultsPage() {
       <div className="mt-24 text-center max-w-3xl mx-auto px-6 py-16 bg-white border border-[#E5E0D8] shadow-2xl shadow-[#52130C]/5">
         <h4 className="text-3xl md:text-4xl font-display mb-6 text-[#1F1E1C]">The Next Step</h4>
         <p className="text-lg text-[#1F1E1C]/70 mb-10 max-w-xl mx-auto font-serif">
-          {['Acquirer', 'Operator'].includes(primaryArchetype) 
+          {ctaRoute === 'academy'
             ? "This is exactly the kind of work we go deep on inside the Academy — the deal process, the evaluation framework, the community of people actively closing."
             : "BoardRoom was built for owners at your stage. Real advisors. Real peers. The board of directors your business deserves but has probably never had."}
         </p>
         <button className="group bg-[#52130C] hover:bg-[#1F1E1C] text-white py-4 px-10 flex items-center justify-center gap-4 transition-all duration-300 mx-auto">
-          <span className="tracking-widest text-xs uppercase font-bold">Learn More</span>
+          <span className="tracking-widest text-xs uppercase font-bold">
+            {ctaRoute === 'academy' ? "Explore Academy" : "Explore BoardRoom"}
+          </span>
           <MoveRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" />
         </button>
       </div>

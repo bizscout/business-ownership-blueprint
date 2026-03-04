@@ -1,5 +1,6 @@
 import { useQuizStore } from "@/store/useQuizStore";
 import LandingPage from "@/components/LandingPage";
+import GatingScreen from "@/components/GatingScreen";
 import QuizScreen from "@/components/QuizScreen";
 import LeadCapture from "@/components/LeadCapture";
 import ResultsPage from "@/components/ResultsPage";
@@ -14,6 +15,7 @@ export default function Home() {
       
       <div className="w-full max-w-xl mx-auto my-auto relative z-10">
         {step === 'landing' && <LandingPage />}
+        {step === 'gating' && <GatingScreen />}
         {step === 'quiz' && <QuizScreen />}
         {step === 'lead' && <LeadCapture />}
         {step === 'results' && <ResultsPage />}

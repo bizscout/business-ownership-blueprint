@@ -2,7 +2,7 @@ import { useQuizStore } from "@/store/useQuizStore";
 import { ArrowRight } from "lucide-react";
 
 export default function LandingPage() {
-  const startQuiz = useQuizStore((state) => state.startQuiz);
+  const startGating = useQuizStore((state) => state.startGating);
 
   return (
     <div className="flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-1000 w-full max-w-lg mx-auto md:mx-0">
@@ -29,7 +29,7 @@ export default function LandingPage() {
       </div>
 
       <button
-        onClick={startQuiz}
+        onClick={startGating}
         className="group relative w-full sm:w-auto bg-[#1F1E1C] hover:bg-[#52130C] text-[#F0EDE4] font-medium py-5 px-8 flex items-center justify-between sm:justify-center gap-4 transition-all duration-300 shadow-xl shadow-[#52130C]/10"
         data-testid="button-start-quiz"
       >

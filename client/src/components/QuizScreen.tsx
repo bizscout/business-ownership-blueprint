@@ -10,19 +10,25 @@ export default function QuizScreen() {
   const question = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex) / questions.length) * 100;
 
+  useEffect(() => {
+    setSelectedScore(null);
+  }, [currentQuestionIndex]);
+
   const handleSelect = (score: number) => {
     setSelectedScore(score);
-    // Auto-advance after 400ms delay
+    
+    // Advance slightly faster than before (250ms instead of 400ms)
+    // The selection color will naturally linger during the exit transition
+    // and clear when the new question mounts via the useEffect above.
     setTimeout(() => {
-      setSelectedScore(null);
       answerQuestion(score);
-    }, 400);
+    }, 250);
   };
 
   if (!question) return null;
 
   return (
-    <div className="w-full flex flex-col animate-in fade-in zoom-in-95 duration-500">
+    <div className="w-full flex flex-col animate-in fade-in zoom-in-[0.98] duration-300">
       {/* Progress Bar */}
       <div className="flex items-center gap-4 mb-10">
         <div className="w-full bg-[#1F1E1C]/10 h-[2px] overflow-hidden">

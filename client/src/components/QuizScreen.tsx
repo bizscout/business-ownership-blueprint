@@ -11,18 +11,23 @@ export default function QuizScreen() {
   const progress = ((currentQuestionIndex) / questions.length) * 100;
 
   useEffect(() => {
-    setSelectedScore(null);
+    // Deliberately hold the selected score for a moment after transitioning 
+    // to the new question to create the "lingering" micro-interaction across pages,
+    // but keep it crisp so it doesn't stay too long.
+    const timer = setTimeout(() => {
+      setSelectedScore(null);
+    }, 150);
+    return () => clearTimeout(timer);
   }, [currentQuestionIndex]);
 
   const handleSelect = (score: number) => {
+    if (selectedScore !== null) return; // Prevent double clicking
     setSelectedScore(score);
     
-    // Advance slightly faster than before (250ms instead of 400ms)
-    // The selection color will naturally linger during the exit transition
-    // and clear when the new question mounts via the useEffect above.
+    // Hold briefly to show the selection before sliding to the next question
     setTimeout(() => {
       answerQuestion(score);
-    }, 250);
+    }, 350);
   };
 
   if (!question) return null;

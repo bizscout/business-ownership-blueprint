@@ -23,11 +23,11 @@ export default function LeadCapture() {
     <div className="flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-700 w-full max-w-lg mx-auto">
       <div className="mb-12">
         <h2 className="text-4xl md:text-5xl font-display mb-4 text-[#1F1E1C] leading-tight">
-          Your Blueprint <br/>
-          <span className="italic font-light text-[#52130C]">is ready.</span>
+          Drop your email <br/>
+          <span className="italic font-light text-[#52130C]">to see your results.</span>
         </h2>
         <p className="text-lg text-[#1F1E1C]/70 font-serif">
-          Enter your details below to see your results and get the full strategic report sent to your inbox.
+          Enter your details below to instantly view your custom blueprint and get the full strategic report sent to your inbox.
         </p>
       </div>
 

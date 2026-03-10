@@ -48,13 +48,15 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const state = get();
     set({ submitError: null });
 
-    const response = await apiRequest("POST", "/api/quiz/submit", {
+    const payload = {
       firstName,
       email,
       ownsBusiness: state.gatingData?.ownsBusiness ?? false,
       revenueRange: state.gatingData?.revenueRange ?? null,
       answers: state.answers,
-    });
+    };
+
+    const response = await apiRequest("POST", "/api/quiz/submit", payload);
 
     const result = await response.json();
 

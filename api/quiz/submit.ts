@@ -119,7 +119,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 1. Validate
   const parsed = quizSubmissionSchema.safeParse(req.body);
   if (!parsed.success) {
-    console.log("[quiz] Validation failed:", parsed.error.flatten().fieldErrors);
+    console.log("[quiz] Validation failed:", JSON.stringify(parsed.error.flatten().fieldErrors), "| answers:", req.body?.answers?.length ?? "missing");
     return res.status(400).json({
       message: "Invalid submission data",
       errors: parsed.error.flatten().fieldErrors,

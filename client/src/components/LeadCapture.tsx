@@ -24,6 +24,8 @@ export default function LeadCapture() {
         const errorData = JSON.parse(err.message.split(": ").slice(1).join(": "));
         if (errorData.code === "DUPLICATE_EMAIL") {
           message = errorData.message;
+        } else if (errorData.message) {
+          message = errorData.message;
         }
       } catch {
         if (err.message?.includes("409")) {

@@ -15,8 +15,8 @@ export default function QuizScreen() {
   }, [currentQuestionIndex]);
 
   const handleSelect = (score: number) => {
+    if (selectedScore !== null) return; // Prevent double-tap
     setSelectedScore(score);
-    // Auto-advance after 400ms delay
     setTimeout(() => {
       answerQuestion(score);
     }, 400);

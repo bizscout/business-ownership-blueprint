@@ -13,13 +13,18 @@ export default function Home() {
       {/* Subtle noise texture overlay for editorial feel */}
       <div className="fixed inset-0 opacity-[0.04] pointer-events-none mix-blend-multiply bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
       
-      <div className="w-full max-w-xl mx-auto my-auto relative z-10">
-        {step === 'landing' && <LandingPage />}
-        {step === 'gating' && <GatingScreen />}
-        {step === 'quiz' && <QuizScreen />}
-        {step === 'lead' && <LeadCapture />}
-        {step === 'results' && <ResultsPage />}
-      </div>
+      {step === 'results' ? (
+        <div className="w-full max-w-4xl mx-auto my-auto relative z-10">
+          <ResultsPage />
+        </div>
+      ) : (
+        <div className="w-full max-w-xl mx-auto my-auto relative z-10">
+          {step === 'landing' && <LandingPage />}
+          {step === 'gating' && <GatingScreen />}
+          {step === 'quiz' && <QuizScreen />}
+          {step === 'lead' && <LeadCapture />}
+        </div>
+      )}
     </main>
   );
 }

@@ -1,12 +1,33 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuizStore } from "@/store/useQuizStore";
 import { calculateAxisScores, calculateArchetypes, getScoreRange } from "@/lib/scoring";
+import { apiRequest } from "@/lib/queryClient";
 import SpiderChart from "./SpiderChart";
 import contentData from "@/data/content.json";
-import { ArrowRight, MoveRight } from "lucide-react";
+import { ArrowRight, MoveRight, AlertCircle, RefreshCw, CheckCircle, Loader2 } from "lucide-react";
 
 export default function ResultsPage() {
-  const { answers, userData, gatingData } = useQuizStore();
+  const { answers, userData, gatingData, serverResults, setEmailStatus } = useQuizStore();
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  const handleRetryEmail = async () => {
+    if (!userData || !serverResults) return;
+    setIsRetrying(true);
+    try {
+      await apiRequest("POST", "/api/quiz/resend-email", {
+        firstName: userData.firstName,
+        email: userData.email,
+        primaryArchetype: serverResults.primaryArchetype,
+        axisScores: serverResults.axisScores,
+        ctaRoute: serverResults.ctaRoute,
+      });
+      setEmailStatus(true, null);
+    } catch {
+      setEmailStatus(false, "Failed to send email. Please try again.");
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   const results = useMemo(() => {
     const axes = calculateAxisScores(answers);
@@ -53,7 +74,7 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="py-12 pb-24 animate-in fade-in duration-1000 w-[100vw] px-4 md:px-8 -ml-[calc(50vw-50%)] max-w-4xl mx-auto">
+    <div className="py-12 pb-24 animate-in fade-in duration-1000 px-4 md:px-8">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-16 justify-center">
@@ -162,17 +183,50 @@ export default function ResultsPage() {
             ? "This is exactly the kind of work we go deep on inside the Academy — the deal process, the evaluation framework, the community of people actively closing."
             : "BoardRoom was built for owners at your stage. Real advisors. Real peers. The board of directors your business deserves but has probably never had."}
         </p>
-        <button className="group bg-[#52130C] hover:bg-[#1F1E1C] text-white py-4 px-10 flex items-center justify-center gap-4 transition-all duration-300 mx-auto">
+        <a
+          href={ctaRoute === 'academy' ? import.meta.env.VITE_ACADEMY_URL : import.meta.env.VITE_BOARDROOM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group bg-[#52130C] hover:bg-[#1F1E1C] text-white py-4 px-10 inline-flex items-center justify-center gap-4 transition-all duration-300 mx-auto"
+        >
           <span className="tracking-widest text-xs uppercase font-bold">
             {ctaRoute === 'academy' ? "Explore Academy" : "Explore BoardRoom"}
           </span>
           <MoveRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" />
-        </button>
+        </a>
       </div>
 
-      <p className="text-center text-[10px] uppercase tracking-widest text-[#1F1E1C]/40 mt-16 font-bold">
-        Your full report has been sent to {userData?.email}.
-      </p>
+      {serverResults?.emailSent ? (
+        <p className="text-center text-[10px] uppercase tracking-widest text-[#1F1E1C]/40 mt-16 font-bold flex items-center justify-center gap-2">
+          <CheckCircle className="w-3 h-3" />
+          Your full report has been sent to {userData?.email}.
+        </p>
+      ) : serverResults?.emailError ? (
+        <div className="mt-16 flex flex-col items-center gap-3">
+          <div className="flex items-center gap-2 text-red-600">
+            <AlertCircle className="w-4 h-4" />
+            <p className="text-xs uppercase tracking-widest font-bold">
+              We couldn't send your report to {userData?.email}.
+            </p>
+          </div>
+          <button
+            onClick={handleRetryEmail}
+            disabled={isRetrying}
+            className="flex items-center gap-2 text-[#52130C] hover:text-[#1F1E1C] text-xs uppercase tracking-widest font-bold transition-colors disabled:opacity-50"
+          >
+            {isRetrying ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3 h-3" />
+            )}
+            {isRetrying ? "Sending..." : "Retry sending email"}
+          </button>
+        </div>
+      ) : (
+        <p className="text-center text-[10px] uppercase tracking-widest text-[#1F1E1C]/40 mt-16 font-bold">
+          Your full report has been sent to {userData?.email}.
+        </p>
+      )}
     </div>
   );
 }

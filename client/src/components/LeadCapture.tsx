@@ -1,22 +1,30 @@
 import { useState } from "react";
 import { useQuizStore } from "@/store/useQuizStore";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, AlertCircle } from "lucide-react";
 
 export default function LeadCapture() {
   const submitLead = useQuizStore((state) => state.submitLead);
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName || !email) return;
-    
+
     setIsSubmitting(true);
-    // Simulate loading for report generation
-    setTimeout(() => {
-      submitLead(firstName, email);
-    }, 1500);
+    setError(null);
+
+    try {
+      await submitLead(firstName, email);
+    } catch (err: any) {
+      const message = err.message?.includes("502") || err.message?.includes("Failed")
+        ? "Something went wrong recording your submission. Please try again."
+        : "An unexpected error occurred. Please try again.";
+      setError(message);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -30,6 +38,13 @@ export default function LeadCapture() {
           Enter your details below to instantly view your custom blueprint and get the full strategic report sent to your inbox.
         </p>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 shrink-0" />
+          <p className="text-red-800 text-sm">{error}</p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">

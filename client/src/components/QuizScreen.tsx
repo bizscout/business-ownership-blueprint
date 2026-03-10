@@ -19,7 +19,7 @@ export default function QuizScreen() {
     setSelectedScore(score);
     setTimeout(() => {
       answerQuestion(score);
-    }, 400);
+    }, 300);
   };
 
   if (!question) return null;

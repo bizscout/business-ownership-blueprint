@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { type Server } from "http";
 import { quizSubmissionSchema, resendRetrySchema } from "@shared/schema";
 import { calculateAxisScores, calculateArchetypes } from "@shared/scoring";
-import { upsertHubSpotContact } from "./services/hubspot";
+import { checkContactExists, createHubSpotContact } from "./services/hubspot";
 import { sendResultsEmail } from "./services/resend";
 import { log } from "./index";
 
@@ -53,10 +53,28 @@ export async function registerRoutes(
     log(`Computed scores — Archetype: ${primaryArchetype}, CTA: ${ctaRoute}`, "quiz");
     log(`Axis scores: DI=${axisScores.DI.toFixed(1)} OD=${axisScores.OD.toFixed(1)} CR=${axisScores.CR.toFixed(1)} RT=${axisScores.RT.toFixed(1)} SV=${axisScores.SV.toFixed(1)}`, "quiz");
 
-    // 3. HubSpot — MUST succeed or we block
-    log(`Upserting contact to HubSpot: ${email}...`, "hubspot");
+    // 3. Check for duplicate email
+    log(`Checking if contact exists: ${email}...`, "hubspot");
     try {
-      const hsResponse = await upsertHubSpotContact({
+      const exists = await checkContactExists(email);
+      if (exists) {
+        log(`Duplicate submission blocked: ${email}`, "hubspot");
+        return res.status(409).json({
+          message: "This email has already been used to complete the Blueprint. Each email can only be used once.",
+          code: "DUPLICATE_EMAIL",
+        });
+      }
+    } catch (err: any) {
+      log(`HubSpot search failed for ${email}: ${err.message}`, "hubspot");
+      return res.status(502).json({
+        message: "Failed to verify your submission. Please try again.",
+      });
+    }
+
+    // 4. HubSpot — MUST succeed or we block
+    log(`Creating contact in HubSpot: ${email}...`, "hubspot");
+    try {
+      const hsResponse = await createHubSpotContact({
         email,
         firstName,
         ownsBusiness,
@@ -65,10 +83,9 @@ export async function registerRoutes(
         primaryArchetype,
         ctaRoute,
       });
-      log(`HubSpot contact upserted: ${email} (id: ${hsResponse?.id ?? "unknown"})`, "hubspot");
+      log(`HubSpot contact created: ${email} (id: ${hsResponse?.id ?? "unknown"})`, "hubspot");
     } catch (err: any) {
-      log(`HubSpot upsert FAILED for ${email}: ${err.message}`, "hubspot");
-      log(`HubSpot error details: ${JSON.stringify(err?.body || err?.response?.data || {})}`, "hubspot");
+      log(`HubSpot create FAILED for ${email}: ${err.message}`, "hubspot");
       return res.status(502).json({
         message: "Failed to record your submission. Please try again.",
       });
@@ -88,7 +105,7 @@ export async function registerRoutes(
           ctaRoute,
         });
         emailSent = true;
-        log(`Results email sent to ${email}: ${JSON.stringify(emailResult)}`, "resend");
+        log(`Results email sent to ${email}`, "resend");
       } else {
         emailError = "Email service not configured";
         log("Resend API key not set, skipping email", "resend");
@@ -128,7 +145,7 @@ export async function registerRoutes(
         return res.status(503).json({ message: "Email service not configured" });
       }
       const result = await sendResultsEmail({ to: email, firstName, primaryArchetype, axisScores, ctaRoute });
-      log(`Retry email sent to ${email}: ${JSON.stringify(result)}`, "resend");
+      log(`Retry email sent to ${email}`, "resend");
       return res.status(200).json({ success: true });
     } catch (err: any) {
       log(`Retry email FAILED for ${email}: ${err.message}`, "resend");

@@ -14,7 +14,26 @@ export interface HubSpotContactData {
   ctaRoute: string;
 }
 
-export async function upsertHubSpotContact(data: HubSpotContactData) {
+export async function checkContactExists(email: string): Promise<boolean> {
+  const searchResponse = await hubspot.crm.contacts.searchApi.doSearch({
+    filterGroups: [{
+      filters: [{
+        propertyName: "email",
+        operator: "EQ",
+        value: email,
+      }],
+    }],
+    properties: ["email", "blueprint_archetype"],
+    limit: 1,
+    after: "0",
+    sorts: [],
+  });
+
+  // Only consider it a duplicate if they already have a blueprint archetype
+  return searchResponse.total > 0 && !!searchResponse.results[0]?.properties?.blueprint_archetype;
+}
+
+export async function createHubSpotContact(data: HubSpotContactData) {
   const properties: Record<string, string> = {
     email: data.email,
     firstname: data.firstName,
@@ -30,25 +49,9 @@ export async function upsertHubSpotContact(data: HubSpotContactData) {
     blueprint_completed_at: new Date().toISOString(),
   };
 
-  try {
-    // Try to create the contact first
-    const response = await hubspot.crm.contacts.basicApi.create({
-      properties,
-      associations: [],
-    });
-    return response;
-  } catch (err: any) {
-    // If contact already exists (409 conflict), update by email
-    if (err?.code === 409 || err?.statusCode === 409 || err?.body?.category === "CONFLICT") {
-      const response = await hubspot.crm.contacts.basicApi.update(
-        data.email,
-        { properties },
-        undefined,
-        undefined,
-        "email"
-      );
-      return response;
-    }
-    throw err;
-  }
+  const response = await hubspot.crm.contacts.basicApi.create({
+    properties,
+    associations: [],
+  });
+  return response;
 }

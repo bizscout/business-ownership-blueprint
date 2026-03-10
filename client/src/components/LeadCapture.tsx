@@ -19,9 +19,19 @@ export default function LeadCapture() {
     try {
       await submitLead(firstName, email);
     } catch (err: any) {
-      const message = err.message?.includes("502") || err.message?.includes("Failed")
-        ? "Something went wrong recording your submission. Please try again."
-        : "An unexpected error occurred. Please try again.";
+      let message = "An unexpected error occurred. Please try again.";
+      try {
+        const errorData = JSON.parse(err.message.split(": ").slice(1).join(": "));
+        if (errorData.code === "DUPLICATE_EMAIL") {
+          message = errorData.message;
+        }
+      } catch {
+        if (err.message?.includes("409")) {
+          message = "This email has already been used to complete the Blueprint. Each email can only be used once.";
+        } else if (err.message?.includes("502") || err.message?.includes("Failed")) {
+          message = "Something went wrong recording your submission. Please try again.";
+        }
+      }
       setError(message);
       setIsSubmitting(false);
     }

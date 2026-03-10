@@ -138,11 +138,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const archetypeScores = calculateArchetypes(axisScores);
   const sorted = Object.entries(archetypeScores).sort(([, a], [, b]) => b - a);
   const primaryArchetype = sorted[0][0];
-  const ctaRoute = ownsBusiness
-    ? "boardroom"
-    : ["Acquirer", "Operator"].includes(primaryArchetype)
-      ? "academy"
-      : "boardroom";
+  const ctaRoute = ownsBusiness ? "boardroom" : "academy";
 
   console.log(`[quiz] Archetype: ${primaryArchetype}, CTA: ${ctaRoute}`);
 

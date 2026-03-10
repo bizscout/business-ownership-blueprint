@@ -29,11 +29,11 @@ interface SpiderChartProps {
 export default function SpiderChart({ axes }: SpiderChartProps) {
   const data = {
     labels: [
-      'Deal Instinct',
-      'Operator Depth',
-      'Capital Readiness',
-      'Risk Tolerance',
-      'Strategic Vision'
+      ['Deal', 'Instinct'],
+      ['Operator', 'Depth'],
+      ['Capital', 'Readiness'],
+      ['Risk', 'Tolerance'],
+      ['Strategic', 'Vision'],
     ],
     datasets: [
       {
@@ -97,7 +97,7 @@ export default function SpiderChart({ axes }: SpiderChartProps) {
   };
 
   return (
-    <div className="w-full aspect-square relative bg-white rounded-xl p-4 shadow-sm border border-[#E5E0D8]">
+    <div className="w-full aspect-square relative bg-white rounded-xl p-6 md:p-4 shadow-sm border border-[#E5E0D8]">
       <Radar data={data} options={options} />
     </div>
   );

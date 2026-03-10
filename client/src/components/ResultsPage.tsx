@@ -57,9 +57,7 @@ export default function ResultsPage() {
 
     const archetypeSummary = getVariation(parsedContent.archetypes[primaryArchetype]);
 
-    // Force BoardRoom routing if they own a business
-    const ctaRoute = gatingData?.ownsBusiness ? 'boardroom' : 
-      (['Acquirer', 'Operator'].includes(primaryArchetype) ? 'academy' : 'boardroom');
+    const ctaRoute = gatingData?.ownsBusiness ? 'boardroom' : 'academy';
 
     return { axes, primaryArchetype, secondaryArchetype, axisContent, archetypeSummary, ctaRoute };
   }, [answers, gatingData]);

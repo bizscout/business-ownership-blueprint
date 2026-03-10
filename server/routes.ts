@@ -44,11 +44,7 @@ export async function registerRoutes(
     const archetypeScores = calculateArchetypes(axisScores);
     const sorted = Object.entries(archetypeScores).sort(([, a], [, b]) => b - a);
     const primaryArchetype = sorted[0][0];
-    const ctaRoute = ownsBusiness
-      ? "boardroom"
-      : ["Acquirer", "Operator"].includes(primaryArchetype)
-        ? "academy"
-        : "boardroom";
+    const ctaRoute = ownsBusiness ? "boardroom" : "academy";
 
     log(`Computed scores — Archetype: ${primaryArchetype}, CTA: ${ctaRoute}`, "quiz");
     log(`Axis scores: DI=${axisScores.DI.toFixed(1)} OD=${axisScores.OD.toFixed(1)} CR=${axisScores.CR.toFixed(1)} RT=${axisScores.RT.toFixed(1)} SV=${axisScores.SV.toFixed(1)}`, "quiz");

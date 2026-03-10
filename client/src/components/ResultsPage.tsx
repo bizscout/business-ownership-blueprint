@@ -102,49 +102,47 @@ export default function ResultsPage() {
       <div className="h-[1px] w-full bg-[#1F1E1C]/10 my-16"></div>
 
       {/* Blueprint Summary */}
-      <div className="grid md:grid-cols-12 gap-12 md:gap-24 mb-20 items-start">
-        <div className="md:col-span-4 md:sticky md:top-12">
-          <h3 className="text-3xl md:text-4xl font-display text-[#1F1E1C] mb-6 leading-tight">Your Strategic <br/> <span className="italic text-[#52130C]">Summary</span></h3>
-          <div className="w-12 h-1 bg-[#52130C] mb-6"></div>
-          <p className="text-[#1F1E1C]/60 text-sm leading-relaxed">
-            This analysis is generated based on your 15-point assessment. It isolates your core strengths and identifies the specific traps your profile falls into.
+      <div className="mb-20 max-w-3xl mx-auto space-y-16">
+        <div className="text-center">
+          <h3 className="text-3xl md:text-4xl font-display text-[#1F1E1C] mb-4 leading-tight">Your Strategic <span className="italic text-[#52130C]">Summary</span></h3>
+          <div className="w-12 h-1 bg-[#52130C] mx-auto mb-4"></div>
+          <p className="text-[#1F1E1C]/50 text-sm">
+            Based on your 15-point assessment
           </p>
         </div>
 
-        <div className="md:col-span-8 space-y-12">
-          <div className="text-lg md:text-xl leading-relaxed text-[#1F1E1C]/90 font-serif">
-            {archetypeSummary.narrative}
+        <div className="text-lg md:text-xl leading-relaxed text-[#1F1E1C]/90 font-serif">
+          {archetypeSummary.narrative}
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="bg-white border border-[#E5E0D8] p-8 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#52130C]"></div>
+            <h4 className="font-bold text-[#1F1E1C] text-sm uppercase tracking-widest mb-4">
+              Biggest Opportunity
+            </h4>
+            <p className="text-[#1F1E1C]/80 leading-relaxed text-sm">{archetypeSummary.opportunity}</p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="bg-white border border-[#E5E0D8] p-8 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-[#52130C]"></div>
-              <h4 className="font-bold text-[#1F1E1C] text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-                Biggest Opportunity
-              </h4>
-              <p className="text-[#1F1E1C]/80 leading-relaxed text-sm">{archetypeSummary.opportunity}</p>
-            </div>
-
-            <div className="bg-white border border-[#E5E0D8] p-8 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-[#1F1E1C]"></div>
-              <h4 className="font-bold text-[#1F1E1C] text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-                Most Common Mistake
-              </h4>
-              <p className="text-[#1F1E1C]/80 leading-relaxed text-sm">{archetypeSummary.mistake}</p>
-            </div>
+          <div className="bg-white border border-[#E5E0D8] p-8 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#1F1E1C]"></div>
+            <h4 className="font-bold text-[#1F1E1C] text-sm uppercase tracking-widest mb-4">
+              Most Common Mistake
+            </h4>
+            <p className="text-[#1F1E1C]/80 leading-relaxed text-sm">{archetypeSummary.mistake}</p>
           </div>
+        </div>
 
-          <div className="bg-[#1F1E1C] text-[#F0EDE4] p-8 md:p-10">
-            <h4 className="font-display text-2xl text-white mb-4">Your 90-Day Focus</h4>
-            <p className="text-[#F0EDE4]/80 leading-relaxed text-lg font-light">{archetypeSummary.focus}</p>
-          </div>
+        <div className="bg-[#1F1E1C] text-[#F0EDE4] p-8 md:p-10">
+          <h4 className="font-display text-2xl text-white mb-4">Your 90-Day Focus</h4>
+          <p className="text-[#F0EDE4]/80 leading-relaxed text-lg font-light">{archetypeSummary.focus}</p>
+        </div>
 
-          <div className="py-8 px-6 border-y border-[#1F1E1C]/10">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#52130C] mb-4">One Question to Sit With</h4>
-            <p className="text-2xl md:text-3xl font-display italic text-[#1F1E1C] leading-snug">
-              "{archetypeSummary.question}"
-            </p>
-          </div>
+        <div className="py-8 px-6 border-y border-[#1F1E1C]/10 text-center">
+          <h4 className="text-xs font-bold uppercase tracking-widest text-[#52130C] mb-6">One Question to Sit With</h4>
+          <p className="text-2xl md:text-3xl font-display italic text-[#1F1E1C] leading-snug">
+            "{archetypeSummary.question}"
+          </p>
         </div>
       </div>
 

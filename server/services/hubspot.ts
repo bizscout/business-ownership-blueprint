@@ -49,9 +49,18 @@ export async function createHubSpotContact(data: HubSpotContactData) {
     blueprint_completed_at: new Date().toISOString(),
   };
 
-  const response = await hubspot.crm.contacts.basicApi.create({
-    properties,
-    associations: [],
-  });
-  return response;
+  try {
+    return await hubspot.crm.contacts.basicApi.create({
+      properties,
+      associations: [],
+    });
+  } catch (err: any) {
+    // If contact already exists in HubSpot (from another source), update it instead
+    const existingId = err?.body?.message?.match(/Existing ID: (\d+)/)?.[1];
+    if (existingId) {
+      await hubspot.crm.contacts.basicApi.update(existingId, { properties });
+      return { id: existingId };
+    }
+    throw err;
+  }
 }

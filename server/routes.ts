@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { type Server } from "http";
 import { quizSubmissionSchema, resendRetrySchema } from "@shared/schema";
 import { calculateAxisScores, calculateArchetypes } from "@shared/scoring";
-import { checkContactExists, createHubSpotContact } from "./services/hubspot";
+import { createHubSpotContact } from "./services/hubspot";
 import { sendResultsEmail } from "./services/resend";
 import { log } from "./index";
 
@@ -49,26 +49,8 @@ export async function registerRoutes(
     log(`Computed scores — Archetype: ${primaryArchetype}, CTA: ${ctaRoute}`, "quiz");
     log(`Axis scores: DI=${axisScores.DI.toFixed(1)} OD=${axisScores.OD.toFixed(1)} CR=${axisScores.CR.toFixed(1)} RT=${axisScores.RT.toFixed(1)} SV=${axisScores.SV.toFixed(1)}`, "quiz");
 
-    // 3. Check for duplicate email
-    log(`Checking if contact exists: ${email}...`, "hubspot");
-    try {
-      const exists = await checkContactExists(email);
-      if (exists) {
-        log(`Duplicate submission blocked: ${email}`, "hubspot");
-        return res.status(409).json({
-          message: "This email has already been used to complete the Blueprint. Each email can only be used once.",
-          code: "DUPLICATE_EMAIL",
-        });
-      }
-    } catch (err: any) {
-      log(`HubSpot search failed for ${email}: ${err.message}`, "hubspot");
-      return res.status(502).json({
-        message: "Failed to verify your submission. Please try again.",
-      });
-    }
-
-    // 4. HubSpot — MUST succeed or we block
-    log(`Creating contact in HubSpot: ${email}...`, "hubspot");
+    // 3. HubSpot — create or update, MUST succeed
+    log(`Saving contact to HubSpot: ${email}...`, "hubspot");
     try {
       const hsResponse = await createHubSpotContact({
         email,
@@ -79,7 +61,7 @@ export async function registerRoutes(
         primaryArchetype,
         ctaRoute,
       });
-      log(`HubSpot contact created: ${email} (id: ${hsResponse?.id ?? "unknown"})`, "hubspot");
+      log(`HubSpot contact saved: ${email} (id: ${hsResponse?.id ?? "unknown"})`, "hubspot");
     } catch (err: any) {
       log(`HubSpot create FAILED for ${email}: ${err.message}`, "hubspot");
       return res.status(502).json({

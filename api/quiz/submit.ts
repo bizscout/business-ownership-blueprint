@@ -142,53 +142,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   console.log(`[quiz] Archetype: ${primaryArchetype}, CTA: ${ctaRoute}`);
 
-  // 3. Check for duplicate email
+  // 3. HubSpot — create or update contact, MUST succeed
   const hubspot = getHubSpotClient();
+  const properties: Record<string, string> = {
+    email, firstname: firstName,
+    owns_business: String(ownsBusiness),
+    estimated_annual_revenue: revenueRange ?? "",
+    blueprint_archetype: primaryArchetype,
+    score_deal_instinct: axisScores.DI.toFixed(1),
+    score_operator_depth: axisScores.OD.toFixed(1),
+    score_capital_readiness: axisScores.CR.toFixed(1),
+    score_risk_tolerance: axisScores.RT.toFixed(1),
+    score_strategic_vision: axisScores.SV.toFixed(1),
+    blueprint_cta_route: ctaRoute,
+    blueprint_completed_at: new Date().toISOString(),
+  };
   try {
-    const searchResponse = await hubspot.crm.contacts.searchApi.doSearch({
-      filterGroups: [{
-        filters: [{ propertyName: "email", operator: "EQ", value: email }],
-      }],
-      properties: ["email", "blueprint_archetype"],
-      limit: 1,
-      after: "0",
-      sorts: [],
-    });
-
-    if (searchResponse.total > 0 && searchResponse.results[0]?.properties?.blueprint_archetype) {
-      console.log(`[hubspot] Duplicate submission blocked: ${email}`);
-      return res.status(409).json({
-        message: "This email has already been used to complete the Blueprint. Each email can only be used once.",
-        code: "DUPLICATE_EMAIL",
-      });
-    }
-  } catch (err: any) {
-    console.error(`[hubspot] Search failed for ${email}:`, err.message);
-    return res.status(502).json({ message: "Failed to verify your submission. Please try again." });
-  }
-
-  // 4. HubSpot — create contact, MUST succeed
-  try {
-    const properties: Record<string, string> = {
-      email, firstname: firstName,
-      owns_business: String(ownsBusiness),
-      estimated_annual_revenue: revenueRange ?? "",
-      blueprint_archetype: primaryArchetype,
-      score_deal_instinct: axisScores.DI.toFixed(1),
-      score_operator_depth: axisScores.OD.toFixed(1),
-      score_capital_readiness: axisScores.CR.toFixed(1),
-      score_risk_tolerance: axisScores.RT.toFixed(1),
-      score_strategic_vision: axisScores.SV.toFixed(1),
-      blueprint_cta_route: ctaRoute,
-      blueprint_completed_at: new Date().toISOString(),
-    };
     const hsResponse = await hubspot.crm.contacts.basicApi.create({ properties, associations: [] });
     console.log(`[hubspot] Contact created: ${email} (id: ${hsResponse?.id ?? "unknown"})`);
   } catch (err: any) {
-    console.error(`[hubspot] FAILED for ${email}:`, err?.body?.message || err.message);
-    return res.status(502).json({
-      message: "Failed to record your submission. Please try again.",
-    });
+    // If contact already exists in HubSpot (from another source), update it instead
+    const existingId = err?.body?.message?.match(/Existing ID: (\d+)/)?.[1];
+    if (existingId) {
+      try {
+        await hubspot.crm.contacts.basicApi.update(existingId, { properties });
+        console.log(`[hubspot] Contact updated: ${email} (id: ${existingId})`);
+      } catch (updateErr: any) {
+        console.error(`[hubspot] Update FAILED for ${email}:`, updateErr?.body?.message || updateErr.message);
+        return res.status(502).json({ message: "Failed to record your submission. Please try again." });
+      }
+    } else {
+      console.error(`[hubspot] FAILED for ${email}:`, err?.body?.message || err.message);
+      return res.status(502).json({ message: "Failed to record your submission. Please try again." });
+    }
   }
 
   // 4. Resend — best effort

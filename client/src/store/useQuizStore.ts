@@ -10,18 +10,17 @@ type ServerResults = {
 };
 
 type QuizState = {
-  step: 'landing' | 'gating' | 'quiz' | 'lead' | 'results';
+  step: 'landing' | 'gating' | 'quiz' | 'results';
   currentQuestionIndex: number;
   answers: number[];
   userData: { firstName: string; email: string } | null;
   gatingData: { ownsBusiness: boolean; revenueRange: string | null } | null;
   serverResults: ServerResults | null;
   submitError: string | null;
-  startGating: () => void;
+  submitLanding: (firstName: string, email: string) => void;
   submitGating: (ownsBusiness: boolean, revenueRange: string | null) => void;
-  startQuiz: () => void;
   answerQuestion: (score: number) => void;
-  submitLead: (firstName: string, email: string) => Promise<void>;
+  submitToServer: () => Promise<void>;
   setEmailStatus: (sent: boolean, error: string | null) => void;
   reset: () => void;
 };
@@ -34,37 +33,38 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   gatingData: null,
   serverResults: null,
   submitError: null,
-  startGating: () => set({ step: 'gating' }),
+  submitLanding: (firstName, email) => set({ userData: { firstName, email }, step: 'gating' }),
   submitGating: (ownsBusiness, revenueRange) => set({ gatingData: { ownsBusiness, revenueRange }, step: 'quiz', currentQuestionIndex: 0, answers: [] }),
-  startQuiz: () => set({ step: 'quiz', currentQuestionIndex: 0, answers: [] }),
-  answerQuestion: (score) => set((state) => {
+  answerQuestion: (score) => {
+    const state = get();
     const newAnswers = [...state.answers, score];
     if (newAnswers.length === 15) {
-      return { answers: newAnswers, step: 'lead' };
+      set({ answers: newAnswers, step: 'results' });
+      // Fire server submission in background after transitioning to results
+      setTimeout(() => get().submitToServer(), 0);
+    } else {
+      set({ answers: newAnswers, currentQuestionIndex: state.currentQuestionIndex + 1 });
     }
-    return { answers: newAnswers, currentQuestionIndex: state.currentQuestionIndex + 1 };
-  }),
-  submitLead: async (firstName: string, email: string) => {
+  },
+  submitToServer: async () => {
     const state = get();
-    set({ submitError: null });
+    if (!state.userData || !state.gatingData) return;
 
     const payload = {
-      firstName,
-      email,
-      ownsBusiness: state.gatingData?.ownsBusiness ?? false,
-      revenueRange: state.gatingData?.revenueRange ?? null,
+      firstName: state.userData.firstName,
+      email: state.userData.email,
+      ownsBusiness: state.gatingData.ownsBusiness,
+      revenueRange: state.gatingData.revenueRange,
       answers: state.answers,
     };
 
-    const response = await apiRequest("POST", "/api/quiz/submit", payload);
-
-    const result = await response.json();
-
-    set({
-      userData: { firstName, email },
-      serverResults: result,
-      step: 'results',
-    });
+    try {
+      const response = await apiRequest("POST", "/api/quiz/submit", payload);
+      const result = await response.json();
+      set({ serverResults: result });
+    } catch (err: any) {
+      set({ submitError: err.message });
+    }
   },
   setEmailStatus: (sent: boolean, error: string | null) => set((state) => ({
     serverResults: state.serverResults
